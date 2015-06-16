@@ -1,0 +1,16 @@
+rhdndocker:
+  build: .
+  command: /sbin/my_init --enable-insecure-key
+  #command: /sbin/my_init
+  environment:
+    PASSENGER_APP_ENV: development
+    APP_ADMIN_USERNAME: admin
+    APP_ADMIN_PASSWORD: adminpass
+  env_file: ./mysql/mysql_env
+  links:
+    - db:mysql
+  ports:
+    - 8080:80
+db:
+  image: mysql
+  env_file: ./mysql/mysql_env

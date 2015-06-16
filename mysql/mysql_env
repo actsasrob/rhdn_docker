@@ -1,0 +1,6 @@
+MYSQL_ROOT_PASSWORD=myrootpassword
+MYSQL_USER=mysqluser
+MYSQL_PASSWORD=mysecretpassword
+MYSQL_DATABASE=rhdndb
+#MYSQL_HOSTNAME=rhdndocker_db_1
+#MYSQL_PORT=3306
