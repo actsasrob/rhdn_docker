@@ -35,12 +35,7 @@ echo "PASSENGER_APP_ENV=$PASSENGER_APP_ENV"
 RAILS_ENV=$PASSENGER_APP_ENV rake --trace db:migrate || error_exit 'Failed to rake db:migrate'
 
 # Create the app admin user
-
-#echo "RAILS_ENV=$PASSENGER_APP_ENV rails runner User.create({ :name => "$APP_ADMIN_USERNAME", :password => "$APP_ADMIN_PASSWORD", :password_confirmation => "$APP_ADMIN_PASSWORD" }).save"
-
-#RAILS_ENV=$PASSENGER_APP_ENV rails runner User.create({ :name => "$APP_ADMIN_USERNAME", :password => "$APP_ADMIN_PASSWORD", :password_confirmation => "$APP_ADMIN_PASSWORD" }).save
-
-echo "HOME=/home/app bundle exec rails runner -e $PASSENGER_APP_ENV  \"User.create({ :name => '$APP_ADMIN_USERNAME', :password => '$APP_ADMIN_PASSWORD', :password_confirmation => '$APP_ADMIN_PASSWORD' }).save\""
+#echo "HOME=/home/app bundle exec rails runner -e $PASSENGER_APP_ENV  \"User.create({ :name => '$APP_ADMIN_USERNAME', :password => '$APP_ADMIN_PASSWORD', :password_confirmation => '$APP_ADMIN_PASSWORD' }).save\""
 
 HOME=/home/app bundle exec rails runner -e $PASSENGER_APP_ENV  "User.create({ :name => '$APP_ADMIN_USERNAME', :password => '$APP_ADMIN_PASSWORD', :password_confirmation => '$APP_ADMIN_PASSWORD' }).save"
 
