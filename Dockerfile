@@ -21,35 +21,31 @@ RUN rm /etc/nginx/sites-enabled/default
 ADD nginx/webapp.conf /etc/nginx/sites-enabled/webapp.conf 
 ADD nginx/00_app_env.conf /etc/nginx/conf.d/00_app_env.conf
 
-# === 4 === # Prepare folders 
-#RUN mkdir /home/app/webapp 
+# Add database and app startup scripts
+RUN mkdir -p /etc/my_init.d
+ADD scripts/* /etc/my_init.d/
 
 # === 5 === # Run Bundle in a cache efficient way 
 WORKDIR /tmp 
 
 RUN apt-get update && apt-get install -y curl
+
+# Clean up APT when done. 
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* 
+
 #ADD https://gitlab.com/robhughesdotnet/rhdn_ror/repository/archive.tar.gz /home/app/webapp/
 RUN mkdir -p /home/app \
     && curl -SL https://gitlab.com/robhughesdotnet/rhdn_ror/repository/archive.tar.gz \
     |  tar -xz -C /home/app/ && mv /home/app/rhdn_ror.git /home/app/webapp
 
-RUN ls -al /home/app/webapp/
-
-#ADD rhdn_ror/Gemfile /tmp/ 
-#ADD rhdn_ror/Gemfile.lock /tmp/ 
-RUN cd /home/app/webapp && bundle install
-#RUN bundle install 
-
-# === 6 === # Add the rails app 
-#ADD rhdn_ror /home/app/webapp 
-
+# === 4 === # Prepare folders 
 ADD mysql/database.yml /home/app/webapp/config/
 
 RUN chown -R app:app /home/app/webapp
 
-# Add database and app startup scripts
-RUN mkdir -p /etc/my_init.d
-ADD scripts/* /etc/my_init.d/
+RUN ls -al /home/app/webapp/
 
-# Clean up APT when done. 
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* 
+USER app
+
+# === 5 === # Run Bundle in a cache efficient way 
+RUN cd /home/app/webapp && bundle install --path vendor/cache
