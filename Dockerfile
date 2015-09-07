@@ -17,35 +17,38 @@ RUN rm -f /etc/service/nginx/down
 # === 3 ==== # Remove the default site 
 RUN rm /etc/nginx/sites-enabled/default 
 
-# Add the nginx info 
+# === 4 ==== # Add the nginx info 
 ADD nginx/webapp.conf /etc/nginx/sites-enabled/webapp.conf 
 ADD nginx/00_app_env.conf /etc/nginx/conf.d/00_app_env.conf
 
-# Add database and app startup scripts
+# === 5 ==== Add database and app startup scripts
 RUN mkdir -p /etc/my_init.d
 ADD scripts/* /etc/my_init.d/
 
-# === 5 === # Run Bundle in a cache efficient way 
 WORKDIR /tmp 
 
+# === 6 ==== Install needed packages
 RUN apt-get update && apt-get install -y curl
 
-# Clean up APT when done. 
+# === 7 ==== Clean up APT when done. 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* 
 
-#ADD https://gitlab.com/robhughesdotnet/rhdn_ror/repository/archive.tar.gz /home/app/webapp/
+# === 8 ==== Install rails app
 RUN mkdir -p /home/app \
     && curl -SL https://gitlab.com/robhughesdotnet/rhdn_ror/repository/archive.tar.gz \
-    |  tar -xz -C /home/app/ && mv /home/app/rhdn_ror.git /home/app/webapp
+    |  tar -xz -C /home/app/ \
+    && mv /home/app/rhdn_ror-master* /home/app/webapp
 
-# === 4 === # Prepare folders 
+# === 9 === # Prepare folders 
 ADD mysql/database.yml /home/app/webapp/config/
 
 RUN chown -R app:app /home/app/webapp
 
 RUN ls -al /home/app/webapp/
 
-USER app
+# Would like to default to non-root user but phusion/passenger docker image needs to run
+# start up scripts as root when container boots up
+#USER app
 
-# === 5 === # Run Bundle in a cache efficient way 
-RUN cd /home/app/webapp && bundle install --path vendor/cache
+# === 10 === #  Bundle gems to speed container startup
+RUN su - app -c 'cd /home/app/webapp && bundle install --path vendor/bundle'

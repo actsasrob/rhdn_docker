@@ -16,9 +16,10 @@ cd $WRK_DIR || error_exit 'Failed to cd to rhdn project'
 
 # bundle gems
 #bundle install || error_exit 'Failed to hundle install'
+bundle update io-console || error_exit 'Failed to hundle install'
 
 # run 'rake secret' and add secret key to config/secret.yml
-NEW_SECRET=$(rake secret)
+NEW_SECRET=$(bundle exec rake secret)
 if [ -z "$NEW_SECRET" ]; then
    error_exit 'Failed to generate new secret'
 fi
@@ -32,7 +33,7 @@ sleep 5
 
 # Make sure any outstanding DB migrations have been applied
 echo "PASSENGER_APP_ENV=$PASSENGER_APP_ENV"
-RAILS_ENV=$PASSENGER_APP_ENV rake --trace db:migrate || error_exit 'Failed to rake db:migrate'
+RAILS_ENV=$PASSENGER_APP_ENV bundle exec rake --trace db:migrate || error_exit 'Failed to rake db:migrate'
 
 # Create the app admin user
 #echo "HOME=/home/app bundle exec rails runner -e $PASSENGER_APP_ENV  \"User.create({ :name => '$APP_ADMIN_USERNAME', :password => '$APP_ADMIN_PASSWORD', :password_confirmation => '$APP_ADMIN_PASSWORD' }).save\""
