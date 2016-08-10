@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 # Helper function
 function error_exit
 {
@@ -13,10 +15,20 @@ whoami
 WRK_DIR=/home/app/webapp
 
 cd $WRK_DIR || error_exit 'Failed to cd to rhdn project'
+pwd
 
 # bundle gems
 #bundle install || error_exit 'Failed to hundle install'
-bundle update io-console || error_exit 'Failed to hundle install'
+#bundle update io-console || error_exit 'Failed to hundle install'
+
+bundle list
+gem list
+#Grrr.... the phusion/passenger-ruby21:latest Docker image contains a version of io-console that is activated which overrides the version of io-console in the Gemfile.lock file. It also strangely
+#uses a version of the gem that is not available in rubygems.org which prevents the Rails app from specifying that same version. So let's get rid of this version of the gem. 
+find  /usr/lib/ruby/gems/2.1.0/specifications -name "io-console-*.gemspec" -exec rm -f {} \;
+gem list
+#cat /home/app/webapp/Gemfile*
+find / -name "io-console*"
 
 # run 'rake secret' and add secret key to config/secret.yml
 NEW_SECRET=$(bundle exec rake secret)
