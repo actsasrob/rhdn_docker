@@ -21,11 +21,14 @@ pwd
 #bundle install || error_exit 'Failed to hundle install'
 #bundle update io-console || error_exit 'Failed to hundle install'
 
+ruby -v
 bundle list
 gem list
+find / -name "io-console*"
 #Grrr.... the phusion/passenger-ruby21:latest Docker image contains a version of io-console that is activated which overrides the version of io-console in the Gemfile.lock file. It also strangely
 #uses a version of the gem that is not available in rubygems.org which prevents the Rails app from specifying that same version. So let's get rid of this version of the gem. 
 find  /usr/lib/ruby/gems/2.1.0/specifications -name "io-console-*.gemspec" -exec rm -f {} \;
+find  /usr/local/rvm/rubies/ruby-2.1.9 -name "io-console-*.gemspec" -exec rm -f {} \;
 gem list
 #cat /home/app/webapp/Gemfile*
 find / -name "io-console*"
