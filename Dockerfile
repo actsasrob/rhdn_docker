@@ -51,4 +51,4 @@ RUN ls -al /home/app/webapp/
 #USER app
 
 # === 10 === #  Bundle gems to speed container startup
-RUN su - app -c 'cd /home/app/webapp && bundle install --path vendor/bundle'
+RUN su - app -c 'cd /home/app/webapp && rm Gemfile.lock && bundle install --path vendor/bundle'
